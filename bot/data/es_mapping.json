@@ -1,0 +1,41 @@
+{
+    "properties": {
+      "title": {
+        "type": "text",
+        "fields": {
+          "trigram": {
+            "type": "text",
+            "analyzer": "trigram"
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "fields": {
+          "trigram": {
+            "type": "text",
+            "analyzer": "trigram"
+          },
+          "default": {
+            "type": "text",
+            "analyzer": "default"
+          }
+        }
+      },
+      "tags": {
+        "type": "keyword"
+      },
+      "category": {
+        "type": "keyword"
+      },
+      "company": {
+        "type": "text"
+      },
+      "extid": {
+        "type": "keyword"
+      },
+      "link": {
+        "type": "keyword"
+      }
+  }
+}
