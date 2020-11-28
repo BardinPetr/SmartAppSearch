@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "${M_PASS}"
+  es:
+    image: elasticsearch:7.7.0
+    restart: always
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    environment:
+      discovery.type: single-node
+  bot:
+    build: ./bot
+    restart: always
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env
+    depends_on:
+      - es
+      - mongo
+
+volumes:
+  es-data:
