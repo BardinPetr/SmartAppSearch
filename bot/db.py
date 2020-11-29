@@ -80,7 +80,7 @@ class DB:
         return self.db.reviews.find_one()
 
     def get_pending_app(self):
-        return self.db.apps.find_one()
+        return list(self.db.apps.aggregate([{"$sample": {"size": 1}}]))[0]
 
     def save_review(self, aid, text, type):
         self.db.reviews.insert_one({
