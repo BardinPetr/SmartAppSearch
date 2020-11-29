@@ -168,3 +168,6 @@ class DB:
                 }] if len(tags) > 0 else [])
             }
         ))
+
+    def get_by_id(self, x):
+        return next(self.db.apps.find({"_id": ObjectId(x)}))
