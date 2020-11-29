@@ -76,10 +76,53 @@ class DB:
         except:
             return []
 
+    def get_pending_review(self):
+        return self.db.reviews.find_one()
+
+    def get_pending_app(self):
+        return self.db.apps.find_one()
+
+    def save_review(self, aid, text, type):
+        self.db.reviews.insert_one({
+            "aid": aid,
+            "text": text,
+            "type": type,
+            "checked": 0
+        })
+
+    def approve_review(self, id):
+        rev = self.db.reviews.find_one({
+            "_id": ObjectId(id)
+        })
+        if rev['type']:
+            self.db.apps.update_one({
+                "_id": ObjectId(rev['aid'])
+            }, {
+                '$push': {
+                    'feedbacks': rev['text']
+                }
+            })
+        else:
+            self.db.apps.update_one({
+                "_id": ObjectId(rev['aid'])
+            }, {
+                '$push': {
+                    'tags': rev['text']
+                }
+            })
+            self.update_es()
+        self.db.reviews.delete_one({
+            "_id": ObjectId(id)
+        })
+
     def category_search(self, text):
         return self.execute_search(
             index=self.IND,
             body={
+                "sort": [
+                    {"pos_feedbacks": {"order": "desc"}},
+                    "_score"
+                ],
                 "query": {
                     "match": {
                         "category": text
@@ -128,7 +171,7 @@ class DB:
         return list(map(lambda x: ObjectId(x), res))
 
     def combine_tags(self, txt):
-        res = next(self.db.apps.aggregate([
+        res = self.db.apps.aggregate([
             {
                 "$match": {
                     "_id": {
@@ -147,27 +190,39 @@ class DB:
                     }
                 }
             }
-        ]))['tags']
-        if '' in res:
-            res.remove('')
-        return res
+        ])
+        res = list(res)
+        if len(res) > 0:
+            res = res[0]['tags']
+            if '' in res:
+                res.remove('')
+            return res
+        return []
 
     def query_by_tags(self, txt, tags):
-        return list(self.db.apps.find(
+        return list(self.db.apps.aggregate([
             {
-                "$and": [{
-                    "_id": {
-                        "$in": self.get_ids_for_query(txt),
-                    }
-                }] + ([{
-                    "tags": {
-                        "$elemMatch": {
-                            "$in": tags
+                "$match": {
+                    "$and": [{
+                        "_id": {
+                            "$in": self.get_ids_for_query(txt),
                         }
-                    }
-                }] if len(tags) > 0 else [])
+                    }] + ([{
+                        "tags": {
+                            "$elemMatch": {
+                                "$in": tags
+                            }
+                        }
+                    }] if len(tags) > 0 else [])
+                }
+            },
+            {
+                "$sort": {
+                    "pos_feedbacks": -1
+                }
             }
+        ]
         ))
 
-    def get_by_id(self, x):
-        return next(self.db.apps.find({"_id": ObjectId(x)}))
+    def get_app_by_id(self, x):
+        return self.db.apps.find_one({"_id": ObjectId(x) if type(x) == str else x})
