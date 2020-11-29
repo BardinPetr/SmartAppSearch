@@ -2,4 +2,6 @@ pyTelegramBotAPI
 elasticsearch
 dnspython
 pymongo
+dotenv
+emoji
 tqdm

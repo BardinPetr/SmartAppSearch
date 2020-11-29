@@ -20,12 +20,17 @@
         },
         "shingle": {
           "type": "shingle",
-          "min_shingle_size": 1,
-          "max_shingle_size": 20
+          "min_shingle_size": 2,
+          "max_shingle_size": 3
+        },
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 10
         }
       },
       "analyzer": {
-        "default": {
+        "main": {
           "char_filter": [
             "html_strip"
           ],
@@ -38,7 +43,7 @@
             "ru_stemmer",
             "en_stop",
             "en_stemmer",
-            "shingle"
+            "autocomplete_filter"
           ]
         },
         "trigram": {

@@ -1,41 +1,42 @@
 {
-    "properties": {
-      "title": {
-        "type": "text",
-        "fields": {
-          "trigram": {
-            "type": "text",
-            "analyzer": "trigram"
-          }
+  "properties": {
+    "title": {
+      "type": "text",
+      "analyzer": "main"
+    },
+    "description": {
+      "type": "text",
+      "fields": {
+        "trigram": {
+          "type": "text",
+          "analyzer": "trigram"
+        },
+        "main": {
+          "type": "text",
+          "analyzer": "main"
         }
-      },
-      "description": {
-        "type": "text",
-        "fields": {
-          "trigram": {
-            "type": "text",
-            "analyzer": "trigram"
-          },
-          "default": {
-            "type": "text",
-            "analyzer": "default"
-          }
-        }
-      },
-      "tags": {
-        "type": "keyword"
-      },
-      "category": {
-        "type": "keyword"
-      },
-      "company": {
-        "type": "text"
-      },
-      "extid": {
-        "type": "keyword"
-      },
-      "link": {
-        "type": "keyword"
       }
+    },
+    "tags": {
+      "type": "keyword"
+    },
+    "category": {
+      "type": "keyword"
+    },
+    "company": {
+      "type": "text"
+    },
+    "extid": {
+      "type": "keyword"
+    },
+    "link": {
+      "type": "keyword"
+    },
+    "pos_feedbacks": {
+      "type": "integer"
+    },
+    "neg_feedbacks": {
+      "type": "integer"
+    }
   }
 }
